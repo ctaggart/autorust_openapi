@@ -336,6 +336,8 @@ pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "allOf")]
     pub all_of: Option<Vec<Box<Schema>>>,
+    #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
     // TODO: we need a validation step that we only collect x-* properties here.
     #[serde(flatten)]
     pub other: BTreeMap<String, serde_json::Value>,
