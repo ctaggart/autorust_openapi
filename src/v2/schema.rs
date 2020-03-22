@@ -201,7 +201,8 @@ pub struct Parameter {
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Response {
-    pub description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
 }
