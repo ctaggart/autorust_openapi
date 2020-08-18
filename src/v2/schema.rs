@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{HashMap, BTreeMap};
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -146,6 +146,7 @@ pub struct PathItem {
     pub parameters: Option<Vec<ParameterOrRef>>,
 }
 
+/// allows paging through lists of data
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-pageable
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
@@ -156,6 +157,10 @@ pub struct MsPageable {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub operation_name: Option<String>,
 }
+
+/// describes the format for specifying examples for request and response of an operation
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
+type MsExamples = HashMap<String, Ref>;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -182,6 +187,8 @@ pub struct Operation {
     pub security: Option<Vec<SecurityRequirement>>,
     #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
     x_ms_pageable: Option<MsPageable>,
+    #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
+    x_ms_examples: Option<MsExamples>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
@@ -228,6 +235,12 @@ pub struct Response {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Ref {
+    #[serde(rename = "$ref")]
+    pub ref_path: String,
 }
 
 // todo: support x-* fields
@@ -284,11 +297,9 @@ pub enum ParameterOrRef {
         )]
         additional_properties: Option<Schema>,
     },
-    Ref {
-        #[serde(rename = "$ref")]
-        ref_path: String,
-    },
+    Ref(Ref),
 }
+
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum Security {
@@ -459,9 +470,9 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref {
+            ParameterOrRef::Ref( Ref {
                 ref_path: "foo/bar".into()
-            }
+            })
         );
     }
 
@@ -470,9 +481,9 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref {
+            serde_json::to_string(&ParameterOrRef::Ref( Ref {
                 ref_path: "foo/bar".into()
-            },)
+            }))
             .unwrap()
         );
     }
