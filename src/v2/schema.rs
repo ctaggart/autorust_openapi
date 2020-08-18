@@ -174,6 +174,14 @@ pub struct Operation {
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
 pub type SecurityRequirement = BTreeMap<String, Vec<String>>;
 
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-location
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum MsParameterLocation {
+    Client,
+    Method,
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Parameter {
@@ -197,6 +205,8 @@ pub struct Parameter {
     pub items: Option<Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
     default: Option<serde_json::Value>,
+    #[serde(rename = "x-ms-parameter-location", skip_serializing_if = "Option::is_none")]
+    x_ms_parameter_location: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
