@@ -146,6 +146,17 @@ pub struct PathItem {
     pub parameters: Option<Vec<ParameterOrRef>>,
 }
 
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-pageable
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MsPageable {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub item_name: Option<String>,
+    pub next_link_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub operation_name: Option<String>,
+}
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "lowercase")]
@@ -169,6 +180,8 @@ pub struct Operation {
     pub parameters: Option<Vec<ParameterOrRef>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<Vec<SecurityRequirement>>,
+    #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
+    x_ms_pageable: Option<MsPageable>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
