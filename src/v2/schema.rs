@@ -180,7 +180,7 @@ pub enum MsLongRunningOperationOptionsFinalStateVia {
 
 impl Default for MsLongRunningOperationOptionsFinalStateVia {
     fn default() -> Self {
-        MsLongRunningOperationOptionsFinalStateVia::AzureSyncOperation
+        MsLongRunningOperationOptionsFinalStateVia::AzureAsyncOperation
     }
 }
 
@@ -317,10 +317,7 @@ pub enum ParameterOrRef {
         // allowEmptyValue ( for query / body params )
         #[serde(skip_serializing_if = "Option::is_none")]
         items: Option<Schema>,
-        #[serde(
-            rename = "additionalProperties",
-            skip_serializing_if = "Option::is_none"
-        )]
+        #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
         additional_properties: Option<Schema>,
     },
     Ref(Ref),
@@ -450,10 +447,7 @@ mod tests {
     #[test]
     fn security_basic_serializes() {
         let json = r#"{"type":"basic"}"#;
-        assert_eq!(
-            json,
-            serde_json::to_string(&Security::Basic { description: None }).unwrap()
-        );
+        assert_eq!(json, serde_json::to_string(&Security::Basic { description: None }).unwrap());
     }
 
     #[test]

@@ -21,13 +21,7 @@ fn main() {
 
                 writeln!(stderr, "error: {}", e).expect(errmsg);
                 for cause in Fail::iter_chain(&e) {
-                    writeln!(
-                        stderr,
-                        "caused by: {} {}",
-                        cause.name().unwrap_or("Error"),
-                        cause
-                    )
-                    .expect(errmsg);
+                    writeln!(stderr, "caused by: {} {}", cause.name().unwrap_or("Error"), cause).expect(errmsg);
                 }
 
                 // The backtrace is not always generated. Try to run this example

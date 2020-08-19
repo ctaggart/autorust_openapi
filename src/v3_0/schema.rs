@@ -466,10 +466,7 @@ pub struct Schema {
     /// and not a standard JSON Schema.
     ///
     /// See <https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#properties>.
-    #[serde(
-        skip_serializing_if = "Option::is_none",
-        rename = "additionalProperties"
-    )]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "additionalProperties")]
     pub additional_properties: Option<ObjectOrReference<Box<Schema>>>,
 
     /// A free-form property to include an example of an instance for this schema.
@@ -1061,10 +1058,7 @@ mod tests {
                     auth_code.authorization_url,
                     Url::parse("https://example.com/api/oauth/dialog").unwrap()
                 );
-                assert_eq!(
-                    auth_code.token_url,
-                    Url::parse("https://example.com/api/oauth/token").unwrap()
-                );
+                assert_eq!(auth_code.token_url, Url::parse("https://example.com/api/oauth/token").unwrap());
                 assert!(implicit.scopes.contains_key("write:pets"));
                 assert!(implicit.scopes.contains_key("read:pets"));
             }

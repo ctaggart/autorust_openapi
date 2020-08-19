@@ -127,16 +127,12 @@ mod tests {
     /// JSON string. The second conversion goes through our `OpenApi`, so the final JSON
     /// string is a representation of _our_ implementation.
     /// By comparing those two JSON conversions, we can validate our implementation.
-    fn compare_spec_through_json(
-        input_file: &Path,
-        save_path_base: &Path,
-    ) -> (String, String, String) {
+    fn compare_spec_through_json(input_file: &Path, save_path_base: &Path) -> (String, String, String) {
         // First conversion:
         //     File -> `String` -> `serde_yaml::Value` -> `serde_json::Value` -> `String`
 
         // Read the original file to string
-        let spec_yaml_str = read_to_string(&input_file)
-            .unwrap_or_else(|e| panic!("failed to read contents of {:?}: {}", input_file, e));
+        let spec_yaml_str = read_to_string(&input_file).unwrap_or_else(|e| panic!("failed to read contents of {:?}: {}", input_file, e));
         // Convert YAML string to JSON string
         let spec_json_str = convert_yaml_str_to_json(&spec_yaml_str);
 
@@ -151,12 +147,7 @@ mod tests {
         let parsed_spec_json_str: String = serde_json::to_string_pretty(&parsed_spec_json).unwrap();
 
         // Save JSON strings to file
-        let api_filename = input_file
-            .file_name()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .replace(".yaml", ".json");
+        let api_filename = input_file.file_name().unwrap().to_str().unwrap().replace(".yaml", ".json");
 
         let mut save_path = save_path_base.to_path_buf();
         save_path.push("yaml_to_json");
@@ -183,18 +174,14 @@ mod tests {
 
     #[test]
     fn can_deserialize_and_reserialize_v2() {
-        let save_path_base: std::path::PathBuf =
-            ["target", "tests", "can_deserialize_and_reserialize_v2"]
-                .iter()
-                .collect();
+        let save_path_base: std::path::PathBuf = ["target", "tests", "can_deserialize_and_reserialize_v2"].iter().collect();
 
         for entry in fs::read_dir("data/v2").unwrap() {
             let path = entry.unwrap().path();
 
             println!("Testing if {:?} is deserializable", path);
 
-            let (api_filename, parsed_spec_json_str, spec_json_str) =
-                compare_spec_through_json(&path, &save_path_base);
+            let (api_filename, parsed_spec_json_str, spec_json_str) = compare_spec_through_json(&path, &save_path_base);
 
             assert_eq!(
                 parsed_spec_json_str.lines().collect::<Vec<_>>(),
@@ -207,10 +194,7 @@ mod tests {
 
     #[test]
     fn can_deserialize_and_reserialize_v3() {
-        let save_path_base: std::path::PathBuf =
-            ["target", "tests", "can_deserialize_and_reserialize_v3"]
-                .iter()
-                .collect();
+        let save_path_base: std::path::PathBuf = ["target", "tests", "can_deserialize_and_reserialize_v3"].iter().collect();
 
         for entry in fs::read_dir("data/v3.0").unwrap() {
             let entry = entry.unwrap();
@@ -218,8 +202,7 @@ mod tests {
 
             println!("Testing if {:?} is deserializable", path);
 
-            let (api_filename, parsed_spec_json_str, spec_json_str) =
-                compare_spec_through_json(&path, &save_path_base);
+            let (api_filename, parsed_spec_json_str, spec_json_str) = compare_spec_through_json(&path, &save_path_base);
 
             assert_eq!(
                 parsed_spec_json_str.lines().collect::<Vec<_>>(),
