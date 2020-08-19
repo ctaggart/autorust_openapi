@@ -216,6 +216,8 @@ pub struct Operation {
     x_ms_long_running_operation: Option<bool>,
     #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
     x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    deprecated: Option<bool>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
