@@ -153,7 +153,8 @@ pub struct PathItem {
 pub struct MsPageable {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub item_name: Option<String>,
-    pub next_link_name: String,
+    // nextLinkName is required, null is valid
+    pub next_link_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub operation_name: Option<String>,
 }
@@ -506,5 +507,11 @@ mod tests {
             }))
             .unwrap()
         );
+    }
+
+    #[test]
+    fn pageable_nextlinkname_may_be_null() {
+        let json = r#"{"x-ms-pageable":{"nextLinkName":null}}"#;
+        serde_json::from_str::<MsPageable>(json).unwrap();
     }
 }
