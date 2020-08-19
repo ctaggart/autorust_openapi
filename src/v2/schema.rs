@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -162,6 +162,28 @@ pub struct MsPageable {
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
 type MsExamples = HashMap<String, Ref>;
 
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MsLongRunningOperationOptions {
+    #[serde(rename = "final-state-via")]
+    pub final_state_via: MsLongRunningOperationOptionsFinalStateVia,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum MsLongRunningOperationOptionsFinalStateVia {
+    AzureAsyncOperation,
+    Location,
+    OriginalUri,
+}
+
+impl Default for MsLongRunningOperationOptionsFinalStateVia {
+    fn default() -> Self {
+        MsLongRunningOperationOptionsFinalStateVia::AzureSyncOperation
+    }
+}
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "lowercase")]
@@ -189,6 +211,10 @@ pub struct Operation {
     x_ms_pageable: Option<MsPageable>,
     #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
     x_ms_examples: Option<MsExamples>,
+    #[serde(rename = "x-ms-long-running-operation", skip_serializing_if = "Option::is_none")]
+    x_ms_long_running_operation: Option<bool>,
+    #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
+    x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
@@ -470,7 +496,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref( Ref {
+            ParameterOrRef::Ref(Ref {
                 ref_path: "foo/bar".into()
             })
         );
@@ -481,7 +507,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref( Ref {
+            serde_json::to_string(&ParameterOrRef::Ref(Ref {
                 ref_path: "foo/bar".into()
             }))
             .unwrap()
