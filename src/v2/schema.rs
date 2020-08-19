@@ -369,6 +369,27 @@ pub enum Flow {
     AccessCode,
 }
 
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MsEnum {
+    name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    model_as_string: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    values: Option<Vec<MsEnumValue>>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde()]
+pub struct MsEnumValue {
+    value: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+}
+
 /// A [JSON schema](http://json-schema.org/) definition describing
 /// the shape and properties of an object.
 ///
@@ -405,6 +426,10 @@ pub struct Schema {
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten
     #[serde(rename = "x-ms-client-flatten", skip_serializing_if = "Option::is_none")]
     pub x_ms_client_flatten: Option<bool>,
+
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+    #[serde(rename = "x-ms-enum", skip_serializing_if = "Option::is_none")]
+    pub x_ms_enum: Option<MsEnum>,
 }
 
 /// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
