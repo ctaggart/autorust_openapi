@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -161,7 +161,7 @@ pub struct MsPageable {
 
 /// describes the format for specifying examples for request and response of an operation
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
-type MsExamples = HashMap<String, Ref>;
+type MsExamples = BTreeMap<String, Reference>;
 
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -258,18 +258,22 @@ pub struct Parameter {
     x_ms_parameter_location: Option<String>,
 }
 
+/// https://swagger.io/docs/specification/2-0/describing-responses/
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Response {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub headers: Option<BTreeMap<String, Header>>,
 }
 
+/// https://swagger.io/docs/specification/using-ref/
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct Ref {
+pub struct Reference {
     #[serde(rename = "$ref")]
-    pub ref_path: String,
+    pub ref_uri: String,
 }
 
 // todo: support x-* fields
@@ -323,7 +327,7 @@ pub enum ParameterOrRef {
         #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
         additional_properties: Option<Schema>,
     },
-    Ref(Ref),
+    Ref(Reference),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -372,10 +376,8 @@ pub enum Flow {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
-    /// [JSON reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03)
-    /// path to another defintion
     #[serde(rename = "$ref")]
-    pub ref_path: Option<String>,
+    pub ref_uri: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -399,9 +401,17 @@ pub struct Schema {
     pub all_of: Option<Vec<Box<Schema>>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    // TODO: we need a validation step that we only collect x-* properties here.
-    #[serde(flatten)]
-    pub other: BTreeMap<String, serde_json::Value>,
+}
+
+/// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+pub struct Header {
+    #[serde(rename = "type")]
+    pub type_: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
 #[cfg(test)]
@@ -493,9 +503,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref(Ref {
-                ref_path: "foo/bar".into()
-            })
+            ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })
         );
     }
 
@@ -504,10 +512,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref(Ref {
-                ref_path: "foo/bar".into()
-            }))
-            .unwrap()
+            serde_json::to_string(&ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })).unwrap()
         );
     }
 
