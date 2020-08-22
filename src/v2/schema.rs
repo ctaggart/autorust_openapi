@@ -146,6 +146,45 @@ pub struct PathItem {
     pub parameters: Option<Vec<ParameterOrRef>>,
 }
 
+/// allows paging through lists of data
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-pageable
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MsPageable {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub item_name: Option<String>,
+    // nextLinkName is required, null is valid
+    pub next_link_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub operation_name: Option<String>,
+}
+
+/// describes the format for specifying examples for request and response of an operation
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
+type MsExamples = BTreeMap<String, Reference>;
+
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MsLongRunningOperationOptions {
+    #[serde(rename = "final-state-via")]
+    pub final_state_via: MsLongRunningOperationOptionsFinalStateVia,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum MsLongRunningOperationOptionsFinalStateVia {
+    AzureAsyncOperation,
+    Location,
+    OriginalUri,
+}
+
+impl Default for MsLongRunningOperationOptionsFinalStateVia {
+    fn default() -> Self {
+        MsLongRunningOperationOptionsFinalStateVia::AzureAsyncOperation
+    }
+}
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "lowercase")]
@@ -169,10 +208,28 @@ pub struct Operation {
     pub parameters: Option<Vec<ParameterOrRef>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<Vec<SecurityRequirement>>,
+    #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
+    x_ms_pageable: Option<MsPageable>,
+    #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
+    x_ms_examples: Option<MsExamples>,
+    #[serde(rename = "x-ms-long-running-operation", skip_serializing_if = "Option::is_none")]
+    x_ms_long_running_operation: Option<bool>,
+    #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
+    x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    deprecated: Option<bool>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
 pub type SecurityRequirement = BTreeMap<String, Vec<String>>;
+
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-location
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum MsParameterLocation {
+    Client,
+    Method,
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
@@ -197,14 +254,26 @@ pub struct Parameter {
     pub items: Option<Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
     default: Option<serde_json::Value>,
+    #[serde(rename = "x-ms-parameter-location", skip_serializing_if = "Option::is_none")]
+    x_ms_parameter_location: Option<String>,
 }
 
+/// https://swagger.io/docs/specification/2-0/describing-responses/
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Response {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub headers: Option<BTreeMap<String, Header>>,
+}
+
+/// https://swagger.io/docs/specification/using-ref/
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct Reference {
+    #[serde(rename = "$ref")]
+    pub ref_uri: String,
 }
 
 // todo: support x-* fields
@@ -255,17 +324,12 @@ pub enum ParameterOrRef {
         // allowEmptyValue ( for query / body params )
         #[serde(skip_serializing_if = "Option::is_none")]
         items: Option<Schema>,
-        #[serde(
-            rename = "additionalProperties",
-            skip_serializing_if = "Option::is_none"
-        )]
+        #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
         additional_properties: Option<Schema>,
     },
-    Ref {
-        #[serde(rename = "$ref")]
-        ref_path: String,
-    },
+    Ref(Reference),
 }
+
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum Security {
@@ -305,6 +369,27 @@ pub enum Flow {
     AccessCode,
 }
 
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MsEnum {
+    name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    model_as_string: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    values: Option<Vec<MsEnumValue>>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde()]
+pub struct MsEnumValue {
+    value: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+}
+
 /// A [JSON schema](http://json-schema.org/) definition describing
 /// the shape and properties of an object.
 ///
@@ -312,10 +397,8 @@ pub enum Flow {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
-    /// [JSON reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03)
-    /// path to another defintion
     #[serde(rename = "$ref")]
-    pub ref_path: Option<String>,
+    pub ref_uri: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -339,9 +422,25 @@ pub struct Schema {
     pub all_of: Option<Vec<Box<Schema>>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    // TODO: we need a validation step that we only collect x-* properties here.
-    #[serde(flatten)]
-    pub other: BTreeMap<String, serde_json::Value>,
+
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten
+    #[serde(rename = "x-ms-client-flatten", skip_serializing_if = "Option::is_none")]
+    pub x_ms_client_flatten: Option<bool>,
+
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+    #[serde(rename = "x-ms-enum", skip_serializing_if = "Option::is_none")]
+    pub x_ms_enum: Option<MsEnum>,
+}
+
+/// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+pub struct Header {
+    #[serde(rename = "type")]
+    pub type_: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub format: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
 #[cfg(test)]
@@ -390,10 +489,7 @@ mod tests {
     #[test]
     fn security_basic_serializes() {
         let json = r#"{"type":"basic"}"#;
-        assert_eq!(
-            json,
-            serde_json::to_string(&Security::Basic { description: None }).unwrap()
-        );
+        assert_eq!(json, serde_json::to_string(&Security::Basic { description: None }).unwrap());
     }
 
     #[test]
@@ -436,9 +532,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref {
-                ref_path: "foo/bar".into()
-            }
+            ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })
         );
     }
 
@@ -447,10 +541,13 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref {
-                ref_path: "foo/bar".into()
-            },)
-            .unwrap()
+            serde_json::to_string(&ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })).unwrap()
         );
+    }
+
+    #[test]
+    fn pageable_nextlinkname_may_be_null() {
+        let json = r#"{"x-ms-pageable":{"nextLinkName":null}}"#;
+        serde_json::from_str::<MsPageable>(json).unwrap();
     }
 }

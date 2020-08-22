@@ -1,6 +1,4 @@
-use crate::v3_0::{
-    Callback, Example, Header, Link, Parameter, RequestBody, Response, Schema, SecurityScheme,
-};
+use crate::v3_0::{Callback, Example, Header, Link, Parameter, RequestBody, Response, Schema, SecurityScheme};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
