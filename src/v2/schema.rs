@@ -19,6 +19,7 @@ impl Default for Scheme {
 }
 
 /// top level document
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Spec {
@@ -100,6 +101,7 @@ pub struct Info {
     pub version: Option<String>,
 }
 
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#contactObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Contact {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -112,7 +114,7 @@ pub struct Contact {
     pub email: Option<String>,
 }
 
-/// todo x-* properties
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#licenseObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct License {
     /// The name of the license type. It's encouraged to use an OSI
@@ -125,7 +127,7 @@ pub struct License {
     pub url: Option<String>,
 }
 
-/// todo support x-* properties
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#path-item-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct PathItem {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -231,34 +233,67 @@ pub enum MsParameterLocation {
     Method,
 }
 
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameter-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Parameter {
-    pub name: String,
+    /// both bodyParameter and nonBodyParameter in one for now
+    /// The name of the parameter.
+    name: String,
+    /// values depend on parameter type
+    /// may be `header`, `query`, 'path`, `formData`
     #[serde(rename = "in")]
-    pub location: String,
+    in_: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub required: Option<bool>,
+    required: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub schema: Option<Schema>,
+    schema: Option<Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unique_items: Option<bool>,
+    #[serde(rename = "uniqueItems")]
+    unique_items: Option<bool>,
+    /// string, number, boolean, integer, array, file ( only for formData )
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "type")]
-    pub param_type: Option<String>,
+    type_: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub format: Option<String>,
+    format: Option<String>,
+    /// A brief description of the parameter. This could contain examples
+    /// of use.  GitHub Flavored Markdown is allowed.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub items: Option<Schema>,
+    description: Option<String>,
+    #[serde(rename = "collectionFormat", skip_serializing_if = "Option::is_none")]
+    collection_format: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     default: Option<serde_json::Value>,
+    // maximum ?
+    // exclusiveMaximum ??
+    // minimum ??
+    // exclusiveMinimum ??
+    // maxLength ??
+    // minLength ??
+    // pattern ??
+    // maxItems ??
+    // minItems ??
+    // enum ??
+    // multipleOf ??
+    // allowEmptyValue ( for query / body params )
+    #[serde(skip_serializing_if = "Option::is_none")]
+    items: Option<Schema>,
+    #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
+    additional_properties: Option<Schema>,
     #[serde(rename = "x-ms-parameter-location", skip_serializing_if = "Option::is_none")]
     x_ms_parameter_location: Option<String>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(untagged)]
+pub enum ParameterOrRef {
+    Parameter(Parameter),
+    Ref(Reference),
+}
+
 /// https://swagger.io/docs/specification/2-0/describing-responses/
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
 pub struct Response {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -270,64 +305,11 @@ pub struct Response {
 }
 
 /// https://swagger.io/docs/specification/using-ref/
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#referenceObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Reference {
     #[serde(rename = "$ref")]
-    pub ref_uri: String,
-}
-
-// todo: support x-* fields
-/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameter-object
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-#[serde(untagged)]
-pub enum ParameterOrRef {
-    /// both bodyParameter and nonBodyParameter in one for now
-    Parameter {
-        /// The name of the parameter.
-        name: String,
-        /// values depend on parameter type
-        /// may be `header`, `query`, 'path`, `formData`
-        #[serde(rename = "in")]
-        location: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        required: Option<bool>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        schema: Option<Schema>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        #[serde(rename = "uniqueItems")]
-        unique_items: Option<bool>,
-        /// string, number, boolean, integer, array, file ( only for formData )
-        #[serde(skip_serializing_if = "Option::is_none")]
-        #[serde(rename = "type")]
-        param_type: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        format: Option<String>,
-        /// A brief description of the parameter. This could contain examples
-        /// of use.  GitHub Flavored Markdown is allowed.
-        #[serde(skip_serializing_if = "Option::is_none")]
-        description: Option<String>,
-        #[serde(rename = "collectionFormat", skip_serializing_if = "Option::is_none")]
-        collection_format: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        default: Option<serde_json::Value>,
-        // maximum ?
-        // exclusiveMaximum ??
-        // minimum ??
-        // exclusiveMinimum ??
-        // maxLength ??
-        // minLength ??
-        // pattern ??
-        // maxItems ??
-        // minItems ??
-        // enum ??
-        // multipleOf ??
-        // allowEmptyValue ( for query / body params )
-        #[serde(skip_serializing_if = "Option::is_none")]
-        items: Option<Schema>,
-        #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
-        additional_properties: Option<Schema>,
-    },
-    Ref(Reference),
+    pub ref_: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -337,7 +319,7 @@ pub enum Security {
     ApiKey {
         name: String,
         #[serde(rename = "in")]
-        location: String,
+        in_: String,
         #[serde(skip_serializing_if = "Option::is_none")]
         description: Option<String>,
     },
@@ -390,6 +372,7 @@ pub struct MsEnumValue {
     name: Option<String>,
 }
 
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
 /// A [JSON schema](http://json-schema.org/) definition describing
 /// the shape and properties of an object.
 ///
@@ -459,7 +442,7 @@ mod tests {
             serde_yaml::from_str::<Security>(&json).unwrap(),
             Security::ApiKey {
                 name: "foo".into(),
-                location: "query".into(),
+                in_: "query".into(),
                 description: None,
             }
         );
@@ -471,7 +454,7 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&Security::ApiKey {
                 name: "foo".into(),
-                location: "query".into(),
+                in_: "query".into(),
                 description: None,
             })
             .unwrap(),
@@ -534,7 +517,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })
+            ParameterOrRef::Ref(Reference { ref_: "foo/bar".into() })
         );
     }
 
@@ -543,7 +526,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref(Reference { ref_uri: "foo/bar".into() })).unwrap()
+            serde_json::to_string(&ParameterOrRef::Ref(Reference { ref_: "foo/bar".into() })).unwrap()
         );
     }
 
