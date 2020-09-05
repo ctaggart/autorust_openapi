@@ -18,6 +18,29 @@ impl Default for Scheme {
     }
 }
 
+/// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum MsMutability {
+    Create,
+    Read,
+    Update,
+}
+
+/// https://swagger.io/docs/specification/data-models/data-types/
+/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum DataType {
+    String,
+    Number,
+    Integer,
+    Boolean,
+    Array,
+    Object,
+}
+
 /// top level document
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -277,10 +300,6 @@ pub struct Parameter {
     // enum ??
     // multipleOf ??
     // allowEmptyValue ( for query / body params )
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub items: Option<Schema>,
-    #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
-    pub additional_properties: Option<Schema>,
     #[serde(rename = "x-ms-parameter-location", skip_serializing_if = "Option::is_none")]
     pub x_ms_parameter_location: Option<String>,
 }
@@ -386,7 +405,7 @@ pub struct Schema {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "type")]
-    pub type_: Option<String>,
+    pub type_: Option<DataType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -399,6 +418,8 @@ pub struct Schema {
     // implies object
     #[serde(skip_serializing_if = "Option::is_none")]
     pub properties: Option<BTreeMap<String, Schema>>,
+    #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
+    pub additional_properties: Option<Box<Schema>>,
     // composition
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "allOf")]
@@ -408,13 +429,33 @@ pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default: Option<bool>,
 
+    /// flattens client model property or parameter
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten
     #[serde(rename = "x-ms-client-flatten", skip_serializing_if = "Option::is_none")]
     pub x_ms_client_flatten: Option<bool>,
 
+    /// additional metadata for enums
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
     #[serde(rename = "x-ms-enum", skip_serializing_if = "Option::is_none")]
     pub x_ms_enum: Option<MsEnum>,
+
+    #[serde(rename = "x-ms-secret", skip_serializing_if = "Option::is_none")]
+    pub x_ms_secret: Option<bool>,
+
+    /// indicates that the Definition Schema Object is a resource as defined by the Resource Manager API
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-azure-resource
+    #[serde(rename = "x-ms-azure-resource", skip_serializing_if = "Option::is_none")]
+    pub x_ms_azure_resource: Option<bool>,
+
+    /// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability
+    #[serde(rename = "x-ms-mutability", skip_serializing_if = "Option::is_none")]
+    pub x_ms_mutability: Option<Vec<MsMutability>>,
+
+    /// allows specific Definition Objects to be excluded from code generation
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-external
+    #[serde(rename = "x-ms-external", skip_serializing_if = "Option::is_none")]
+    pub x_ms_external: Option<bool>,
 }
 
 /// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
