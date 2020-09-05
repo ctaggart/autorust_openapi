@@ -3,7 +3,7 @@ use std::{io::Write, process::exit};
 
 fn main() {
     if let Some(path) = std::env::args().nth(1) {
-        match openapi::from_path(path) {
+        match autorust_openapi::from_path(path) {
             Ok(spec) => {
                 /*for (path, op) in spec.paths {
                     println!("{}", path);
@@ -13,7 +13,7 @@ fn main() {
                     println!("{}", name);
                     println!("{:#?}", definition);
                 }*/
-                println!("{}", openapi::to_json(&spec).unwrap());
+                println!("{}", autorust_openapi::to_json(&spec).unwrap());
             }
             Err(e) => {
                 let stderr = &mut ::std::io::stderr();

@@ -279,6 +279,8 @@ pub struct Parameter {
     #[serde(rename = "type")]
     pub type_: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub items: Option<Box<Schema>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
     /// A brief description of the parameter. This could contain examples
     /// of use.  GitHub Flavored Markdown is allowed.

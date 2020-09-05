@@ -1,29 +1,13 @@
 //! Schema specification for [OpenAPI 3.0.0](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md)
 
-use semver;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::{BTreeMap, HashMap};
-use url;
-use url_serde;
+use url::{self, Url, };
 
 use crate::{
     v3_0::components::{Components, ObjectOrReference},
-    Error, Result, MINIMUM_OPENAPI30_VERSION,
 };
-
-impl Spec {
-    pub fn validate_version(&self) -> Result<semver::Version> {
-        let spec_version = &self.openapi;
-        let sem_ver = semver::Version::parse(spec_version)?;
-        let required_version = semver::VersionReq::parse(MINIMUM_OPENAPI30_VERSION).unwrap();
-        if required_version.matches(&sem_ver) {
-            Ok(sem_ver)
-        } else {
-            Err(Error::UnsupportedSpecFileVersion(sem_ver))?
-        }
-    }
-}
 
 /// top level document
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -108,16 +92,6 @@ pub struct Info {
     /// The license information for the exposed API.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub license: Option<License>,
-}
-
-/// Wraper around `url::Url` to fix serde issue
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct Url(#[serde(with = "url_serde")] url::Url);
-
-impl Url {
-    pub fn parse<S: AsRef<str>>(input: S) -> std::result::Result<Url, url::ParseError> {
-        url::Url::parse(input.as_ref()).map(Url)
-    }
 }
 
 /// Contact information for the exposed API.

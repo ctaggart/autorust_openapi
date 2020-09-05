@@ -1,7 +1,6 @@
 //! Error types
 
 use failure::Fail;
-use semver::{SemVerError, Version};
 use serde_json::Error as JsonError;
 use serde_yaml::Error as YamlError;
 use std::io::Error as IoError;
@@ -15,10 +14,6 @@ pub enum Error {
     Yaml(YamlError),
     #[fail(display = "{}", _0)]
     Serialize(JsonError),
-    #[fail(display = "{}", _0)]
-    SemVerError(SemVerError),
-    #[fail(display = "Unsupported spec file version ({})", _0)]
-    UnsupportedSpecFileVersion(Version),
 }
 
 impl From<IoError> for Error {
@@ -36,11 +31,5 @@ impl From<YamlError> for Error {
 impl From<JsonError> for Error {
     fn from(e: JsonError) -> Self {
         Error::Serialize(e)
-    }
-}
-
-impl From<SemVerError> for Error {
-    fn from(e: SemVerError) -> Self {
-        Error::SemVerError(e)
     }
 }

@@ -1,4 +1,7 @@
 # 0.2
+* forked as autorust_openapi
+* updated url dependency to 2.x, that removed need for serde_url
+* switched CI from Travis CI to GitHub Actions
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type
