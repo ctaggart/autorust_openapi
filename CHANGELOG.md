@@ -15,6 +15,7 @@
 * replace `Option<Vec<T>>` with `Vec<T>` and skip if `is_empty` like openapiv3
 * add dependency on `indexmap` like openapiv3
 * use `is_empty` on `IndexMap` instead of wrapping in `Option<T>` like openapiv3
+* added is_false util for serialization of bool values from openapiv3
 
 * expose security definition as an enum type
 * Adds License object

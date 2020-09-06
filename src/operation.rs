@@ -29,10 +29,10 @@ pub struct Operation {
     pub x_ms_pageable: Option<MsPageable>,
     #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
     pub x_ms_examples: Option<MsExamples>,
-    #[serde(rename = "x-ms-long-running-operation", skip_serializing_if = "Option::is_none")]
-    pub x_ms_long_running_operation: Option<bool>,
+    #[serde(rename = "x-ms-long-running-operation", default, skip_serializing_if = "is_false")]
+    pub x_ms_long_running_operation: bool,
     #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
     pub x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub deprecated: Option<bool>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub deprecated: bool,
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
-use crate::{Operation, ReferenceOr, MsMutability};
+use crate::*;
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -132,13 +132,12 @@ pub struct Parameter {
     /// may be `header`, `query`, 'path`, `formData`
     #[serde(rename = "in")]
     pub in_: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub required: Option<bool>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub required: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename = "uniqueItems")]
-    pub unique_items: Option<bool>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub unique_items: bool,
     /// string, number, boolean, integer, array, file ( only for formData )
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "type")]
@@ -228,8 +227,8 @@ pub enum Flow {
 #[serde(rename_all = "camelCase")]
 pub struct MsEnum {
     pub name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub model_as_string: Option<bool>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub model_as_string: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub values: Vec<MsEnumValue>,
 }
@@ -277,28 +276,28 @@ pub struct Schema {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[serde(rename = "allOf")]
     pub all_of: Vec<Box<Schema>>,
-    #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub default: Option<bool>,
+    #[serde(rename = "readOnly", default, skip_serializing_if = "is_false")]
+    pub read_only: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub default: bool,
 
     /// flattens client model property or parameter
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten
-    #[serde(rename = "x-ms-client-flatten", skip_serializing_if = "Option::is_none")]
-    pub x_ms_client_flatten: Option<bool>,
+    #[serde(rename = "x-ms-client-flatten", default, skip_serializing_if = "is_false")]
+    pub x_ms_client_flatten: bool,
 
     /// additional metadata for enums
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
     #[serde(rename = "x-ms-enum", skip_serializing_if = "Option::is_none")]
     pub x_ms_enum: Option<MsEnum>,
 
-    #[serde(rename = "x-ms-secret", skip_serializing_if = "Option::is_none")]
-    pub x_ms_secret: Option<bool>,
+    #[serde(rename = "x-ms-secret", default, skip_serializing_if = "is_false")]
+    pub x_ms_secret: bool,
 
     /// indicates that the Definition Schema Object is a resource as defined by the Resource Manager API
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-azure-resource
-    #[serde(rename = "x-ms-azure-resource", skip_serializing_if = "Option::is_none")]
-    pub x_ms_azure_resource: Option<bool>,
+    #[serde(rename = "x-ms-azure-resource", default, skip_serializing_if = "is_false")]
+    pub x_ms_azure_resource: bool,
 
     /// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability
@@ -307,8 +306,8 @@ pub struct Schema {
 
     /// allows specific Definition Objects to be excluded from code generation
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-external
-    #[serde(rename = "x-ms-external", skip_serializing_if = "Option::is_none")]
-    pub x_ms_external: Option<bool>,
+    #[serde(rename = "x-ms-external", default, skip_serializing_if = "is_false")]
+    pub x_ms_external: bool,
 }
 
 /// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
