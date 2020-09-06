@@ -1,16 +1,27 @@
 on: [push, pull_request]
-env:
-  CFG_RELEASE: nightly
-  CFG_RELEASE_CHANNEL: nightly
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - name: git clone
+      uses: actions/checkout@v2
+      with:
+        path: autorust_openapi
     - name: install rust nightly
       uses: actions-rs/toolchain@v1
       with:
         toolchain: nightly
         override: true
-    - name: test
-      run: cargo test
+    - name: unit tests
+      run: |
+        cd $GITHUB_WORKSPACE/autorust_openapi
+        cargo test --lib
+    - name: git clone OAI/OpenAPI-Specification
+      uses: actions/checkout@v2
+      with:
+        repository: OAI/OpenAPI-Specification
+        path: OpenAPI-Specification
+    - name: integration tests openapi_spec_examples
+      run: |
+        cd $GITHUB_WORKSPACE/autorust_openapi
+        cargo test --test openapi_spec_examples
