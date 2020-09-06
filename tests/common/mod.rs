@@ -1,4 +1,4 @@
-use autorust_openapi::v2::Spec;
+use autorust_openapi::Spec;
 use std::{fs::File, io::Read};
 
 pub type Error = Box<dyn std::error::Error>;

@@ -1,10 +1,14 @@
 # 0.2
 * forked as autorust_openapi
-* removed OpenAPI v3 support. Use openapiv3 crate.
+* removed OpenAPI v3 support. Use openapiv3 crate
+* moved v2 module to be the root module
 * removed serde_yaml, url, serde_url, semver, error-chain, & failure dependencies
 * switched CI from Travis CI to GitHub Actions
 * removed pretty_assertions dev-dependencies
 * added serde_ignored dev-dependency
+* added integration tests for OpenAPI v2 specification examples
+* added integration tests for azure-rest-api-specs specifications
+* added --example ignored
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type
