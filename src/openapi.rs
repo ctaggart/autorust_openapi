@@ -15,16 +15,16 @@ pub struct OpenAPI {
     /// The base path to the API. Example: '/api'.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub base_path: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub schemes: Option<Vec<Scheme>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub schemes: Vec<Scheme>,
     /// A list of MIME types accepted by the API.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub consumes: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub consumes: Vec<String>,
     /// A list of MIME types the API can produce.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub produces: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<Tag>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub produces: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<Tag>,
     /// Relative paths to the individual endpoints. They must be relative
     /// to the 'basePath'.
     pub paths: BTreeMap<String, PathItem>,
@@ -37,8 +37,8 @@ pub struct OpenAPI {
     pub responses: Option<BTreeMap<String, Response>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security_definitions: Option<BTreeMap<String, Security>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<Vec<BTreeMap<String, Vec<String>>>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub security: Vec<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_docs: Option<ExternalDoc>,
 }

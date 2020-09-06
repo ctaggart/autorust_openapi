@@ -124,8 +124,8 @@ pub struct PathItem {
     pub options: Option<Operation>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub head: Option<Operation>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<Vec<ReferenceOr<Parameter>>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub parameters: Vec<ReferenceOr<Parameter>>,
 }
 
 /// allows paging through lists of data
@@ -169,27 +169,26 @@ impl Default for MsLongRunningOperationOptionsFinalStateVia {
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-#[serde(rename_all = "lowercase")]
 pub struct Operation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub summary: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub consumes: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub produces: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub schemes: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub consumes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub produces: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub schemes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<String>,
     #[serde(rename = "operationId", skip_serializing_if = "Option::is_none")]
     pub operation_id: Option<String>,
     pub responses: BTreeMap<String, Response>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<Vec<ReferenceOr<Parameter>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<Vec<SecurityRequirement>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub parameters: Vec<ReferenceOr<Parameter>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub security: Vec<SecurityRequirement>,
     #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
     pub x_ms_pageable: Option<MsPageable>,
     #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
@@ -321,8 +320,8 @@ pub struct MsEnum {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub model_as_string: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub values: Option<Vec<MsEnumValue>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub values: Vec<MsEnumValue>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -352,11 +351,11 @@ pub struct Schema {
     pub type_: Option<DataType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[serde(rename = "enum")]
-    pub enum_: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub required: Option<Vec<String>>,
+    pub enum_: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub required: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub items: Option<Box<Schema>>,
     // implies object
@@ -365,9 +364,9 @@ pub struct Schema {
     #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
     pub additional_properties: Option<Box<Schema>>,
     // composition
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[serde(rename = "allOf")]
-    pub all_of: Option<Vec<Box<Schema>>>,
+    pub all_of: Vec<Box<Schema>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -393,8 +392,8 @@ pub struct Schema {
 
     /// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability
-    #[serde(rename = "x-ms-mutability", skip_serializing_if = "Option::is_none")]
-    pub x_ms_mutability: Option<Vec<MsMutability>>,
+    #[serde(rename = "x-ms-mutability", default, skip_serializing_if = "Vec::is_empty")]
+    pub x_ms_mutability: Vec<MsMutability>,
 
     /// allows specific Definition Objects to be excluded from code generation
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-external

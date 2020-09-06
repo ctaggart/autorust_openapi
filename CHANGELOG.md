@@ -12,6 +12,7 @@
 * add `ReferenceOr<T>` from openapiv3
 * replace `ParameterOrRef` with `ReferenceOr<Parameter>`
 * rename `Spec` to `OpenAPI` to match openapiv3
+* replace `Option<Vec<T>>` with `Vec<T>` and skip if `is_empty` like openapiv3
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type
