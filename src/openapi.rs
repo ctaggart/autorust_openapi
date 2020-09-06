@@ -40,5 +40,5 @@ pub struct OpenAPI {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub security: Vec<IndexMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub external_docs: Option<ExternalDoc>,
+    pub external_docs: Option<ExternalDocumentation>,
 }

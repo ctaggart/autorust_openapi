@@ -1,5 +1,7 @@
 mod autorest;
 mod contact;
+mod external_documentation;
+mod header;
 mod info;
 mod license;
 mod openapi;
@@ -8,10 +10,13 @@ mod parameter;
 mod reference;
 mod schema;
 mod security;
+mod tag;
 mod util;
 
 pub use self::autorest::*;
 pub use self::contact::*;
+pub use self::external_documentation::*;
+pub use self::header::*;
 pub use self::info::*;
 pub use self::license::*;
 pub use self::openapi::*;
@@ -20,4 +25,5 @@ pub use self::parameter::*;
 pub use self::reference::*;
 pub use self::schema::*;
 pub use self::security::*;
+pub use self::tag::*;
 pub use self::util::*;

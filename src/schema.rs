@@ -4,6 +4,8 @@ use crate::*;
 
 // http://json.schemastore.org/swagger-2.0
 
+/// The transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss".
+/// If the schemes is not included, the default scheme to be used is the one used to access the Swagger definition itself.
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Scheme {
@@ -30,23 +32,6 @@ pub enum DataType {
     Boolean,
     Array,
     Object,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-#[serde(rename_all = "lowercase")]
-pub struct Tag {
-    pub name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub external_docs: Option<ExternalDoc>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-pub struct ExternalDoc {
-    pub url: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#path-item-object
@@ -150,15 +135,4 @@ pub struct Schema {
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-external
     #[serde(rename = "x-ms-external", default, skip_serializing_if = "is_false")]
     pub x_ms_external: bool,
-}
-
-/// see Response Headers https://swagger.io/docs/specification/2-0/describing-responses/
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-pub struct Header {
-    #[serde(rename = "type")]
-    pub type_: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub format: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
 }
