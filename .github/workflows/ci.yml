@@ -25,4 +25,9 @@ jobs:
         repository: OAI/OpenAPI-Specification
         path: OpenAPI-Specification
     - name: integration tests openapi_spec_examples
-      run: cargo test --test openapi_spec_examples
+      run: |
+        pwd
+        cd $GITHUB_WORKSPACE/autorust_openapi
+        pwd
+        ls
+        cargo test --test openapi_spec_examples
