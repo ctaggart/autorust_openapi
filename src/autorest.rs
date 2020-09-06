@@ -3,7 +3,28 @@
 
 use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
-use crate::{Operation, ReferenceOr};
+use crate::*;
+
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MsEnum {
+    pub name: String,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub model_as_string: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub values: Vec<MsEnumValue>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde()]
+pub struct MsEnumValue {
+    pub value: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
 
 /// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability

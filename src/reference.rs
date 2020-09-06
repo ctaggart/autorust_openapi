@@ -31,3 +31,27 @@ impl<T> ReferenceOr<Box<T>> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use serde_json;
+    use crate::{ReferenceOr, Parameter};
+
+    #[test]
+    fn deserializes() {
+        let json = r#"{"$ref":"foo/bar"}"#;
+        assert_eq!(
+            serde_json::from_str::<ReferenceOr<Parameter>>(&json).unwrap(),
+            ReferenceOr::<Parameter>::Reference { reference: "foo/bar".into() }
+        );
+    }
+
+    #[test]
+    fn serializes() {
+        let json = r#"{"$ref":"foo/bar"}"#;
+        assert_eq!(
+            json,
+            serde_json::to_string(&ReferenceOr::<Parameter>::Reference { reference: "foo/bar".into() }).unwrap()
+        );
+    }
+}
