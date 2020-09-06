@@ -19,6 +19,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: OAI/OpenAPI-Specification
-        path: OpenAPI-Specification
+        path: ../OpenAPI-Specification
     - name: integration tests openapi_spec_examples
       run: cargo test --test openapi_spec_examples
