@@ -1,6 +1,6 @@
 use crate::*;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use indexmap::IndexMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -25,20 +25,20 @@ pub struct OpenAPI {
     pub produces: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<Tag>,
-    /// Relative paths to the individual endpoints. They must be relative
-    /// to the 'basePath'.
-    pub paths: BTreeMap<String, PathItem>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub definitions: Option<BTreeMap<String, Schema>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<BTreeMap<String, Parameter>>,
+    /// Relative paths to the individual endpoints. They must be relative to the 'basePath'.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub paths: IndexMap<String, PathItem>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub definitions: IndexMap<String, Schema>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub parameters: IndexMap<String, Parameter>,
     /// mappings to http response codes or "default"
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub responses: Option<BTreeMap<String, Response>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security_definitions: Option<BTreeMap<String, Security>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub responses: IndexMap<String, Response>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub security_definitions: IndexMap<String, Security>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub security: Vec<BTreeMap<String, Vec<String>>>,
+    pub security: Vec<IndexMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_docs: Option<ExternalDoc>,
 }

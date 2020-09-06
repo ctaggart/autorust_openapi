@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use indexmap::IndexMap;
 use crate::ReferenceOr;
 
 // http://json.schemastore.org/swagger-2.0
@@ -143,7 +143,7 @@ pub struct MsPageable {
 
 /// describes the format for specifying examples for request and response of an operation
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
-type MsExamples = BTreeMap<String, ReferenceOr<Operation>>;
+type MsExamples = IndexMap<String, ReferenceOr<Operation>>;
 
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -184,7 +184,8 @@ pub struct Operation {
     pub tags: Vec<String>,
     #[serde(rename = "operationId", skip_serializing_if = "Option::is_none")]
     pub operation_id: Option<String>,
-    pub responses: BTreeMap<String, Response>,
+    /// Required. The list of possible responses as they are returned from executing this operation.
+    pub responses: IndexMap<String, Response>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameters: Vec<ReferenceOr<Parameter>>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -202,7 +203,7 @@ pub struct Operation {
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
-pub type SecurityRequirement = BTreeMap<String, Vec<String>>;
+pub type SecurityRequirement = IndexMap<String, Vec<String>>;
 
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-location
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -270,8 +271,8 @@ pub struct Response {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub schema: Option<Schema>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<BTreeMap<String, Header>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub headers: IndexMap<String, Header>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -293,7 +294,8 @@ pub enum Security {
         #[serde(rename = "tokenUrl")]
         #[serde(skip_serializing_if = "Option::is_none")]
         token_url: Option<String>,
-        scopes: BTreeMap<String, String>,
+        /// Required. The available scopes for the OAuth2 security scheme.
+        scopes: IndexMap<String, String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         description: Option<String>,
     },
@@ -359,8 +361,8 @@ pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub items: Option<Box<Schema>>,
     // implies object
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub properties: Option<BTreeMap<String, Schema>>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub properties: IndexMap<String, Schema>,
     #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
     pub additional_properties: Option<Box<Schema>>,
     // composition
@@ -416,7 +418,7 @@ pub struct Header {
 mod tests {
     use super::*;
     use serde_json;
-    use std::collections::BTreeMap;
+    use indexmap::IndexMap;
     use crate::ReferenceOr;
 
     #[test]
@@ -464,7 +466,7 @@ mod tests {
     #[test]
     fn security_oauth_deserializes() {
         let json = r#"{"type":"oauth2","flow":"implicit","authorizationUrl":"foo/bar","scopes":{"foo":"bar"}}"#;
-        let mut scopes = BTreeMap::new();
+        let mut scopes = IndexMap::new();
         scopes.insert("foo".into(), "bar".into());
         assert_eq!(
             serde_json::from_str::<Security>(&json).unwrap(),
@@ -481,7 +483,7 @@ mod tests {
     #[test]
     fn security_oauth_serializes() {
         let json = r#"{"type":"oauth2","flow":"implicit","authorizationUrl":"foo/bar","scopes":{"foo":"bar"}}"#;
-        let mut scopes = BTreeMap::new();
+        let mut scopes = IndexMap::new();
         scopes.insert("foo".into(), "bar".into());
         assert_eq!(
             json,

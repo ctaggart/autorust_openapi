@@ -21,11 +21,9 @@ fn main() -> Result<()> {
             for (path, _op) in spec.paths {
                 println!("  {}", path);
             }
-            if let Some(definitions) = spec.definitions {
-                println!("# of definitions: {}", definitions.len());
-                for (name, _definition) in definitions {
-                    println!("  {}", name);
-                }
+            println!("# of definitions: {}", spec.definitions.len());
+            for (name, _definition) in spec.definitions {
+                println!("  {}", name);
             }
         }
     }
