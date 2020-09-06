@@ -475,14 +475,13 @@ pub struct Header {
 mod tests {
     use super::*;
     use serde_json;
-    use serde_yaml;
     use std::collections::BTreeMap;
 
     #[test]
     fn security_api_deserializes() {
         let json = r#"{"type":"apiKey", "name":"foo", "in": "query"}"#;
         assert_eq!(
-            serde_yaml::from_str::<Security>(&json).unwrap(),
+            serde_json::from_str::<Security>(&json).unwrap(),
             Security::ApiKey {
                 name: "foo".into(),
                 in_: "query".into(),
@@ -509,7 +508,7 @@ mod tests {
     fn security_basic_deserializes() {
         let json = r#"{"type":"basic"}"#;
         assert_eq!(
-            serde_yaml::from_str::<Security>(&json).unwrap(),
+            serde_json::from_str::<Security>(&json).unwrap(),
             Security::Basic { description: None }
         );
     }
@@ -526,7 +525,7 @@ mod tests {
         let mut scopes = BTreeMap::new();
         scopes.insert("foo".into(), "bar".into());
         assert_eq!(
-            serde_yaml::from_str::<Security>(&json).unwrap(),
+            serde_json::from_str::<Security>(&json).unwrap(),
             Security::Oauth2 {
                 flow: Flow::Implicit,
                 authorization_url: "foo/bar".into(),
@@ -559,7 +558,7 @@ mod tests {
     fn parameter_or_ref_deserializes_ref() {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
-            serde_yaml::from_str::<ParameterOrRef>(&json).unwrap(),
+            serde_json::from_str::<ParameterOrRef>(&json).unwrap(),
             ParameterOrRef::Ref(Reference { ref_: "foo/bar".into() })
         );
     }

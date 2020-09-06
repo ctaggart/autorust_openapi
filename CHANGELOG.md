@@ -1,7 +1,10 @@
 # 0.2
 * forked as autorust_openapi
-* updated url dependency to 2.x, that removed need for serde_url
+* removed OpenAPI v3 support. Use openapiv3 crate.
+* removed serde_yaml, url, serde_url, semver, error-chain, & failure dependencies
 * switched CI from Travis CI to GitHub Actions
+* removed pretty_assertions dev-dependencies
+* added serde_ignored dev-dependency
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type
@@ -11,7 +14,6 @@
 * Derives Clone for all structs
 * Changes the order of the output to be more similar to OpenAPI examples
 * switch to 2018 edition
-* swap error_chain for failure crate
 
 # 0.1.5
 
