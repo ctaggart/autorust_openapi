@@ -27,9 +27,9 @@ pub struct OpenAPI {
     pub tags: Vec<Tag>,
     /// Relative paths to the individual endpoints. They must be relative to the 'basePath'.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub paths: IndexMap<String, PathItem>,
+    pub paths: IndexMap<String, ReferenceOr<PathItem>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub definitions: IndexMap<String, Schema>,
+    pub definitions: IndexMap<String, ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub parameters: IndexMap<String, Parameter>,
     /// mappings to http response codes or "default"
