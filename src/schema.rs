@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
-use crate::ReferenceOr;
+use crate::{Operation, ReferenceOr, MsMutability};
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -17,16 +17,6 @@ impl Default for Scheme {
     fn default() -> Self {
         Scheme::Http
     }
-}
-
-/// provides insight to Autorest on how to generate code. It doesn't alter the modeling of what is actually sent on the wire
-/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-mutability
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "lowercase")]
-pub enum MsMutability {
-    Create,
-    Read,
-    Update,
 }
 
 /// https://swagger.io/docs/specification/data-models/data-types/
@@ -128,90 +118,8 @@ pub struct PathItem {
     pub parameters: Vec<ReferenceOr<Parameter>>,
 }
 
-/// allows paging through lists of data
-/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-pageable
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct MsPageable {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub item_name: Option<String>,
-    // nextLinkName is required, null is valid
-    pub next_link_name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub operation_name: Option<String>,
-}
-
-/// describes the format for specifying examples for request and response of an operation
-/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
-type MsExamples = IndexMap<String, ReferenceOr<Operation>>;
-
-/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct MsLongRunningOperationOptions {
-    #[serde(rename = "final-state-via")]
-    pub final_state_via: MsLongRunningOperationOptionsFinalStateVia,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "kebab-case")]
-pub enum MsLongRunningOperationOptionsFinalStateVia {
-    AzureAsyncOperation,
-    Location,
-    OriginalUri,
-}
-
-impl Default for MsLongRunningOperationOptionsFinalStateVia {
-    fn default() -> Self {
-        MsLongRunningOperationOptionsFinalStateVia::AzureAsyncOperation
-    }
-}
-
-/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
-pub struct Operation {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub summary: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub consumes: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub produces: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub schemes: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tags: Vec<String>,
-    #[serde(rename = "operationId", skip_serializing_if = "Option::is_none")]
-    pub operation_id: Option<String>,
-    /// Required. The list of possible responses as they are returned from executing this operation.
-    pub responses: IndexMap<String, Response>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub parameters: Vec<ReferenceOr<Parameter>>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub security: Vec<SecurityRequirement>,
-    #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
-    pub x_ms_pageable: Option<MsPageable>,
-    #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
-    pub x_ms_examples: Option<MsExamples>,
-    #[serde(rename = "x-ms-long-running-operation", skip_serializing_if = "Option::is_none")]
-    pub x_ms_long_running_operation: Option<bool>,
-    #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
-    pub x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub deprecated: Option<bool>,
-}
-
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityRequirementObject
 pub type SecurityRequirement = IndexMap<String, Vec<String>>;
-
-/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-location
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub enum MsParameterLocation {
-    Client,
-    Method,
-}
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameter-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -419,7 +327,7 @@ mod tests {
     use super::*;
     use serde_json;
     use indexmap::IndexMap;
-    use crate::ReferenceOr;
+    use crate::{ReferenceOr};
 
     #[test]
     fn security_api_deserializes() {
@@ -514,11 +422,5 @@ mod tests {
             json,
             serde_json::to_string(&ReferenceOr::<Parameter>::Reference { reference: "foo/bar".into() }).unwrap()
         );
-    }
-
-    #[test]
-    fn pageable_nextlinkname_may_be_null() {
-        let json = r#"{"x-ms-pageable":{"nextLinkName":null}}"#;
-        serde_json::from_str::<MsPageable>(json).unwrap();
     }
 }
