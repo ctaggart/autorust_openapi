@@ -6,11 +6,17 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - name: git clone
+      uses: actions/checkout@v2
     - name: install rust nightly
       uses: actions-rs/toolchain@v1
       with:
         toolchain: nightly
         override: true
-    - name: test
-      run: cargo test
+    - name: unit tests
+      run: cargo test --lib
+    - name: git clone OAI/OpenAPI-Specification
+      uses: actions/checkout@v2
+      repository: OAI/OpenAPI-Specification
+    - name: integration tests openapi_spec_examples
+      run: cargo test --test openapi_spec_examples
