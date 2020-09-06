@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use crate::ReferenceOr;
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -168,7 +169,7 @@ pub struct PathItem {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub head: Option<Operation>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<Vec<ParameterOrRef>>,
+    pub parameters: Option<Vec<ReferenceOr<Parameter>>>,
 }
 
 /// allows paging through lists of data
@@ -186,7 +187,7 @@ pub struct MsPageable {
 
 /// describes the format for specifying examples for request and response of an operation
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-examples
-type MsExamples = BTreeMap<String, Reference>;
+type MsExamples = BTreeMap<String, ReferenceOr<Operation>>;
 
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-long-running-operation-options
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -230,7 +231,7 @@ pub struct Operation {
     pub operation_id: Option<String>,
     pub responses: BTreeMap<String, Response>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub parameters: Option<Vec<ParameterOrRef>>,
+    pub parameters: Option<Vec<ReferenceOr<Parameter>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<Vec<SecurityRequirement>>,
     #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
@@ -306,13 +307,6 @@ pub struct Parameter {
     pub x_ms_parameter_location: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-#[serde(untagged)]
-pub enum ParameterOrRef {
-    Parameter(Parameter),
-    Ref(Reference),
-}
-
 /// https://swagger.io/docs/specification/2-0/describing-responses/
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -323,14 +317,6 @@ pub struct Response {
     pub schema: Option<Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub headers: Option<BTreeMap<String, Header>>,
-}
-
-/// https://swagger.io/docs/specification/using-ref/
-/// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#referenceObject
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-pub struct Reference {
-    #[serde(rename = "$ref")]
-    pub ref_: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -476,6 +462,7 @@ mod tests {
     use super::*;
     use serde_json;
     use std::collections::BTreeMap;
+    use crate::ReferenceOr;
 
     #[test]
     fn security_api_deserializes() {
@@ -558,8 +545,8 @@ mod tests {
     fn parameter_or_ref_deserializes_ref() {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
-            serde_json::from_str::<ParameterOrRef>(&json).unwrap(),
-            ParameterOrRef::Ref(Reference { ref_: "foo/bar".into() })
+            serde_json::from_str::<ReferenceOr<Parameter>>(&json).unwrap(),
+            ReferenceOr::<Parameter>::Reference { reference: "foo/bar".into() }
         );
     }
 
@@ -568,7 +555,7 @@ mod tests {
         let json = r#"{"$ref":"foo/bar"}"#;
         assert_eq!(
             json,
-            serde_json::to_string(&ParameterOrRef::Ref(Reference { ref_: "foo/bar".into() })).unwrap()
+            serde_json::to_string(&ReferenceOr::<Parameter>::Reference { reference: "foo/bar".into() }).unwrap()
         );
     }
 

@@ -9,6 +9,8 @@
 * added integration tests for OpenAPI v2 specification examples
 * added integration tests for azure-rest-api-specs specifications
 * added --example ignored
+* add `ReferenceOr<T>` from openapiv3
+* replace `ParameterOrRef` with `ReferenceOr<Parameter>`
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type
