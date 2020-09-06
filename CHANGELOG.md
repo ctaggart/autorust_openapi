@@ -11,6 +11,7 @@
 * added --example ignored
 * add `ReferenceOr<T>` from openapiv3
 * replace `ParameterOrRef` with `ReferenceOr<Parameter>`
+* rename `Spec` to `OpenAPI` to match openapiv3
 
 * expose security definition as an enum type
 * expose schema types which define `parameters` with new `ParameterOrRef` type

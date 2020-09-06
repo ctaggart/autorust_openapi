@@ -1,4 +1,4 @@
-use autorust_openapi::Spec;
+use autorust_openapi::OpenAPI;
 use std::{fs::File, io::Read, process::exit};
 
 pub type Error = Box<dyn std::error::Error>;
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
             // instead of reading directly from the bytes, wrap the deserializer with serde_ignored
             // let spec: Spec = serde_json::from_slice(&bytes)?;
             let deserializer = &mut serde_json::Deserializer::from_slice(&bytes);
-            let _spec: Spec = serde_ignored::deserialize(deserializer, |path| {
+            let _spec: OpenAPI = serde_ignored::deserialize(deserializer, |path| {
                 println!("ignored {}", path.to_string());
             })?;
         }
