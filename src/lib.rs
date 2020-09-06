@@ -1,4 +1,7 @@
 mod autorest;
+mod contact;
+mod info;
+mod license;
 mod openapi;
 mod operation;
 mod parameter;
@@ -8,6 +11,9 @@ mod security;
 mod util;
 
 pub use self::autorest::*;
+pub use self::contact::*;
+pub use self::info::*;
+pub use self::license::*;
 pub use self::openapi::*;
 pub use self::operation::*;
 pub use self::parameter::*;
