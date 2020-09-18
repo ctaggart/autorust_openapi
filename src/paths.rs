@@ -1,6 +1,5 @@
+use crate::{Operation, Parameter, ReferenceOr};
 use serde::{Deserialize, Serialize};
-use crate::{ReferenceOr, Operation, Parameter};
-use indexmap::IndexMap;
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#path-item-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
@@ -22,5 +21,3 @@ pub struct PathItem {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameters: Vec<ReferenceOr<Parameter>>,
 }
-
-pub type Paths = IndexMap<String, ReferenceOr<PathItem>>;

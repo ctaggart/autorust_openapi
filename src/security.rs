@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(tag = "type")]
@@ -44,8 +44,8 @@ pub enum Flow {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json;
     use indexmap::IndexMap;
+    use serde_json;
 
     #[test]
     fn api_deserializes() {

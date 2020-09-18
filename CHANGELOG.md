@@ -16,6 +16,7 @@
 * add dependency on `indexmap` like openapiv3
 * use `is_empty` on `IndexMap` instead of wrapping in `Option<T>` like openapiv3
 * added is_false util for serialization of bool values from openapiv3
+* added missing Schema Object & Parameter Object fields
 
 * expose security definition as an enum type
 * Adds License object

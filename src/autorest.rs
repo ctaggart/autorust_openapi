@@ -1,9 +1,9 @@
 //! AutoRest Extensions for OpenAPI 2.0
 //! https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md
 
-use serde::{Deserialize, Serialize};
-use indexmap::IndexMap;
 use crate::*;
+use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
@@ -38,7 +38,7 @@ pub enum MsMutability {
 
 /// allows paging through lists of data
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-pageable
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct MsPageable {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -83,10 +83,38 @@ pub enum MsParameterLocation {
     Method,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(untagged)]
+pub enum MsCodeGenerationSetting {
+    String(String),
+    Bool(bool),
+}
+
+/// replaces the fixed host with a host template that can be replaced with variable parameters
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameterized-host
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MsParameterizedHost {
+    pub host_template: String,
+    #[serde(default = "default_as_true", skip_serializing_if = "is_true")]
+    pub use_scheme_prefix: bool,
+    pub position_in_operation: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub parameters: Vec<ReferenceOr<Parameter>>,
+}
+
+/// groups method parameters in generated clients
+/// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-grouping
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+pub struct MsParameterGrouping {
+    pub name: Option<String>,
+    pub postfix: Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::MsPageable;
     use serde_json;
-    use crate::{MsPageable};
 
     #[test]
     fn pageable_nextlinkname_may_be_null() {
