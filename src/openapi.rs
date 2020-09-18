@@ -1,6 +1,6 @@
 use crate::*;
-use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 /// This is the root document object for the API specification.
 /// It combines what previously was the Resource Listing and API Declaration (version 1.2 and earlier) together into one document.
@@ -27,14 +27,14 @@ pub struct OpenAPI {
     pub produces: Vec<String>,
     /// Relative paths to the individual endpoints. They must be relative to the 'basePath'.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub paths: Paths,
+    pub paths: IndexMap<String, ReferenceOr<PathItem>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub definitions: IndexMap<String, ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub parameters: IndexMap<String, Parameter>,
     /// mappings to http response codes or "default"
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub responses: IndexMap<String, Response>,
+    pub responses: IndexMap<String, ReferenceOr<Response>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub security_definitions: IndexMap<String, Security>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -43,4 +43,9 @@ pub struct OpenAPI {
     pub tags: Vec<Tag>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_docs: Option<ExternalDocumentation>,
+
+    /// replaces the fixed host with a host template that can be replaced with variable parameters
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameterized-host
+    #[serde(rename = "x-ms-parameterized-host", skip_serializing_if = "Option::is_none")]
+    pub x_ms_parameterized_host: Option<MsParameterizedHost>,
 }

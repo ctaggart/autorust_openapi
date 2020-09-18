@@ -1,6 +1,6 @@
 use crate::*;
-use serde::{Deserialize, Serialize};
 use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#operation-object
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]

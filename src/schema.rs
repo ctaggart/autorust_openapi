@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-use indexmap::IndexMap;
 use crate::*;
+use indexmap::IndexMap;
+use serde::{Deserialize, Serialize};
 
 // http://json.schemastore.org/swagger-2.0
 
@@ -44,45 +44,64 @@ pub struct Response {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub schema: Option<Schema>,
+    pub schema: Option<ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub headers: IndexMap<String, Header>,
+    pub headers: IndexMap<String, ReferenceOr<Header>>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
-/// A [JSON schema](http://json-schema.org/) definition describing
-/// the shape and properties of an object.
-///
-/// This may also contain a `$ref` to another definition
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub required: Vec<String>,
+    // implies object
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub properties: IndexMap<String, ReferenceOr<Box<Schema>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename = "type")]
+    pub additional_properties: Option<ReferenceOr<Box<Schema>>>,
+    // composition
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub all_of: Vec<ReferenceOr<Box<Schema>>>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub read_only: bool,
+
+    // fields also found in Parameter Object
+    // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameter-object
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     pub type_: Option<DataType>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[serde(rename = "enum")]
-    pub enum_: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub required: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub items: Option<Box<Schema>>,
-    // implies object
-    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub properties: IndexMap<String, Schema>,
-    #[serde(rename = "additionalProperties", skip_serializing_if = "Option::is_none")]
-    pub additional_properties: Option<Box<Schema>>,
-    // composition
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    #[serde(rename = "allOf")]
-    pub all_of: Vec<Box<Schema>>,
-    #[serde(rename = "readOnly", default, skip_serializing_if = "is_false")]
-    pub read_only: bool,
+    pub items: Option<ReferenceOr<Box<Schema>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<f64>,
     #[serde(default, skip_serializing_if = "is_false")]
-    pub default: bool,
+    pub exclusive_maximum: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum: Option<f64>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub exclusive_minimum: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_length: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_length: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pattern: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_items: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_items: Option<usize>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub unique_items: bool,
+    #[serde(rename = "enum", default, skip_serializing_if = "Vec::is_empty")]
+    pub enum_: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub multiple_of: Option<f64>,
 
     /// flattens client model property or parameter
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten

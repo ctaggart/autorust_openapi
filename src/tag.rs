@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use crate::ExternalDocumentation;
+use serde::{Deserialize, Serialize};
 
 // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#tagObject
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
