@@ -25,14 +25,16 @@ pub struct Operation {
     pub parameters: Vec<ReferenceOr<Parameter>>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub security: Vec<SecurityRequirement>,
+
     #[serde(rename = "x-ms-pageable", skip_serializing_if = "Option::is_none")]
     pub x_ms_pageable: Option<MsPageable>,
-    #[serde(rename = "x-ms-examples", skip_serializing_if = "Option::is_none")]
-    pub x_ms_examples: Option<MsExamples>,
+    #[serde(rename = "x-ms-examples", default, skip_serializing_if = "IndexMap::is_empty")]
+    pub x_ms_examples: MsExamples,
     #[serde(rename = "x-ms-long-running-operation", default, skip_serializing_if = "is_false")]
     pub x_ms_long_running_operation: bool,
     #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
     pub x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
+
     #[serde(default, skip_serializing_if = "is_false")]
     pub deprecated: bool,
 }
