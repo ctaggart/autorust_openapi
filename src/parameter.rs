@@ -19,7 +19,7 @@ pub struct Parameter {
     pub required: bool,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub schema: Option<Schema>,
+    pub schema: Option<ReferenceOr<Schema>>,
 
     // fields also in Schema Object
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
