@@ -1,10 +1,10 @@
 use autorust_openapi::OpenAPI;
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, path::Path};
 
 pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
 
-pub fn assert_deserialize_without_ignored(paths: Vec<&str>) -> Result<()> {
+pub fn assert_deserialize_without_ignored<P: AsRef<Path> + std::fmt::Debug>(paths: Vec<P>) -> Result<()> {
     for path in paths {
         println!("  test deserialize {:?}", path);
         let mut bytes = Vec::new();
