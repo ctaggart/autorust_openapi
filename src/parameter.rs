@@ -1,4 +1,4 @@
-use crate::{is_false, DataType, MsParameterGrouping, ReferenceOr, Schema};
+use crate::{is_false, DataType, MsEnum, MsParameterGrouping, ReferenceOr, Schema};
 use serde::{Deserialize, Serialize};
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameter-object
@@ -75,4 +75,9 @@ pub struct Parameter {
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-grouping
     #[serde(rename = "x-ms-parameter-grouping", skip_serializing_if = "Option::is_none")]
     pub x_ms_parameter_grouping: Option<MsParameterGrouping>,
+
+    /// additional metadata for enums
+    /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-enum
+    #[serde(rename = "x-ms-enum", skip_serializing_if = "Option::is_none")]
+    pub x_ms_enum: Option<MsEnum>,
 }
