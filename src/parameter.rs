@@ -27,7 +27,7 @@ pub struct Parameter {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub items: Option<ReferenceOr<Box<Schema>>>,
+    pub items: Option<ReferenceOr<Schema>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]

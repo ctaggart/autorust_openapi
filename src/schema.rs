@@ -59,12 +59,12 @@ pub struct Schema {
     pub required: Vec<String>,
     // implies object
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub properties: IndexMap<String, ReferenceOr<Box<Schema>>>,
+    pub properties: IndexMap<String, ReferenceOr<Schema>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub additional_properties: Option<ReferenceOr<Box<Schema>>>,
+    pub additional_properties: Box<Option<ReferenceOr<Schema>>>,
     // composition
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub all_of: Vec<ReferenceOr<Box<Schema>>>,
+    pub all_of: Vec<ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "is_false")]
     pub read_only: bool,
 
@@ -75,7 +75,7 @@ pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub format: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub items: Option<ReferenceOr<Box<Schema>>>,
+    pub items: Box<Option<ReferenceOr<Schema>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
