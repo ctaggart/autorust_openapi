@@ -17,3 +17,4 @@ indexmap = {version = "1.0", features = ["serde-1"]}
 
 [dev-dependencies]
 serde_ignored = "*"
+assert-json-diff = "*"

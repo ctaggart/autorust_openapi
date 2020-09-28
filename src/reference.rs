@@ -1,3 +1,4 @@
+use crate::*;
 use serde::{Deserialize, Serialize};
 
 /// https://swagger.io/docs/specification/using-ref/
@@ -8,6 +9,22 @@ pub enum ReferenceOr<T> {
     Reference {
         #[serde(rename = "$ref")]
         reference: String,
+        // $ref with sibling elements are not OpenAPI spec compliant
+        // https://github.com/ctaggart/autorust_openapi/issues/13
+        #[serde(skip_serializing_if = "Option::is_none")]
+        title: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        description: Option<String>,
+        // specifying "type" feels like a bug in the spec
+        #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
+        type_: Option<DataType>,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+
+        /// flattens client model property or parameter
+        /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-client-flatten
+        #[serde(rename = "x-ms-client-flatten", skip_serializing_if = "Option::is_none")]
+        x_ms_client_flatten: Option<bool>,
     },
     Item(T),
 }
@@ -23,7 +40,12 @@ mod tests {
         assert_eq!(
             serde_json::from_str::<ReferenceOr<Parameter>>(&json).unwrap(),
             ReferenceOr::<Parameter>::Reference {
-                reference: "foo/bar".into()
+                reference: "foo/bar".into(),
+                title: None,
+                description: None,
+                x_ms_client_flatten: None,
+                type_: None,
+                read_only: None
             }
         );
     }
@@ -34,7 +56,12 @@ mod tests {
         assert_eq!(
             json,
             serde_json::to_string(&ReferenceOr::<Parameter>::Reference {
-                reference: "foo/bar".into()
+                reference: "foo/bar".into(),
+                title: None,
+                description: None,
+                x_ms_client_flatten: None,
+                type_: None,
+                read_only: None
             })
             .unwrap()
         );

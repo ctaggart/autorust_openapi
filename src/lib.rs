@@ -12,9 +12,8 @@ mod reference;
 mod schema;
 mod security;
 mod tag;
-mod util;
 
 pub use self::{
     autorest::*, contact::*, external_documentation::*, header::*, info::*, license::*, openapi::*, operation::*, parameter::*, paths::*,
-    reference::*, schema::*, security::*, tag::*, util::*,
+    reference::*, schema::*, security::*, tag::*,
 };

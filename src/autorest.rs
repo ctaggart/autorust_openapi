@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct MsEnum {
     pub name: String,
-    #[serde(default, skip_serializing_if = "is_false")]
-    pub model_as_string: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub model_as_string: Option<bool>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub values: Vec<MsEnumValue>,
 }
@@ -96,8 +96,9 @@ pub enum MsCodeGenerationSetting {
 #[serde(rename_all = "camelCase")]
 pub struct MsParameterizedHost {
     pub host_template: String,
-    #[serde(default = "default_as_true", skip_serializing_if = "is_true")]
-    pub use_scheme_prefix: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub use_scheme_prefix: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub position_in_operation: Option<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameters: Vec<ReferenceOr<Parameter>>,
@@ -107,7 +108,9 @@ pub struct MsParameterizedHost {
 /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-grouping
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct MsParameterGrouping {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub postfix: Option<String>,
 }
 
