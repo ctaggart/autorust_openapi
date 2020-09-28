@@ -1,3 +1,7 @@
+// cargo test --test azure_rest_api_specs
+// These tests require cloning azure-rest-api-specs.
+// git clone git@github.com:Azure/azure-rest-api-specs.git ../azure-rest-api-specs
+
 mod common;
 use common::*;
 
@@ -11,14 +15,6 @@ const PATHS: &[&str] = &[
     // "../azure-rest-api-specs/specification/apimanagement/resource-manager/Microsoft.ApiManagement/stable/2019-12-01/apimapis.json",
     "../azure-rest-api-specs/specification/communication/data-plane/Microsoft.CommunicationServicesChat/preview/2020-09-21-preview2/communicationserviceschat.json",
 ];
-
-// cargo test --test azure_rest_api_specs
-// These tests require cloning azure-rest-api-specs.
-// git clone git@github.com:Azure/azure-rest-api-specs.git ../azure-rest-api-specs
-#[test]
-fn can_deserialize_azure_rest_api_specs() -> Result<()> {
-    assert_deserialize_without_ignored(PATHS)
-}
 
 #[test]
 fn can_roundtrip_azure_rest_api_specs() -> Result<()> {
