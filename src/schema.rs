@@ -48,8 +48,8 @@ pub struct Response {
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub headers: IndexMap<String, ReferenceOr<Header>>,
 
-    #[serde(default, rename = "x-ms-error-response", skip_serializing_if = "std::ops::Not::not")]
-    pub x_ms_error_response: bool,
+    #[serde(rename = "x-ms-error-response", skip_serializing_if = "Option::is_none")]
+    pub x_ms_error_response: Option<bool>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
