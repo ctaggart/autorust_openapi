@@ -30,11 +30,16 @@ pub struct Operation {
     pub x_ms_pageable: Option<MsPageable>,
     #[serde(rename = "x-ms-examples", default, skip_serializing_if = "IndexMap::is_empty")]
     pub x_ms_examples: MsExamples,
-    #[serde(rename = "x-ms-long-running-operation", default, skip_serializing_if = "is_false")]
-    pub x_ms_long_running_operation: bool,
+    #[serde(rename = "x-ms-long-running-operation", skip_serializing_if = "Option::is_none")]
+    pub x_ms_long_running_operation: Option<bool>,
     #[serde(rename = "x-ms-long-running-operation-options", skip_serializing_if = "Option::is_none")]
     pub x_ms_long_running_operation_options: Option<MsLongRunningOperationOptions>,
+    #[serde(rename = "x-ms-request-id", skip_serializing_if = "Option::is_none")]
+    pub x_ms_request_id: Option<String>,
 
-    #[serde(default, skip_serializing_if = "is_false")]
-    pub deprecated: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deprecated: Option<bool>,
+
+    #[serde(rename = "externalDocs", skip_serializing_if = "Option::is_none")]
+    pub external_docs: Option<ExternalDocumentation>,
 }
