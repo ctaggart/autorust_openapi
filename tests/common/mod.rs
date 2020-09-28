@@ -6,7 +6,7 @@ use std::{fs::File, io::Read, path::Path};
 pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
 
-pub fn assert_deserialize_without_ignored<P: AsRef<Path> + std::fmt::Debug>(paths: Vec<P>) -> Result<()> {
+pub fn assert_deserialize_without_ignored<P: AsRef<Path> + std::fmt::Debug>(paths: &[P]) -> Result<()> {
     for path in paths {
         println!("  test {:?}", path);
         let mut bytes = Vec::new();
@@ -15,15 +15,20 @@ pub fn assert_deserialize_without_ignored<P: AsRef<Path> + std::fmt::Debug>(path
         let mut ignored = Vec::new();
         let _spec: OpenAPI = serde_ignored::deserialize(deserializer, |path| {
             let path = path.to_string();
-            println!("    ignored {}", &path);
+            eprintln!("    ignored {}", &path);
             ignored.push(path);
         })?;
-        assert_eq!(0, ignored.len());
+        assert_eq!(
+            0,
+            ignored.len(),
+            "A total of {} fields were ignored when deserializing",
+            ignored.len()
+        );
     }
     Ok(())
 }
 
-pub fn assert_roundtrip_eq<P: AsRef<Path> + std::fmt::Debug>(paths: Vec<P>) -> Result<()> {
+pub fn assert_roundtrip_eq<P: AsRef<Path> + std::fmt::Debug>(paths: &[P]) -> Result<()> {
     for path in paths {
         println!("  test {:?}", path);
         let mut bytes = Vec::new();

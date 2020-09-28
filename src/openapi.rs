@@ -28,6 +28,9 @@ pub struct OpenAPI {
     /// Relative paths to the individual endpoints. They must be relative to the 'basePath'.
     // #[serde(default, skip_serializing_if = "IndexMap::is_empty")] // do not skip
     pub paths: IndexMap<String, ReferenceOr<PathItem>>,
+    /// Relative paths to the individual endpoints. They must be relative to the 'basePath'.
+    #[serde(default, rename = "x-ms-paths", skip_serializing_if = "IndexMap::is_empty")]
+    pub x_ms_paths: IndexMap<String, ReferenceOr<PathItem>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub definitions: IndexMap<String, ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
