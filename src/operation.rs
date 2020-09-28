@@ -42,4 +42,8 @@ pub struct Operation {
 
     #[serde(rename = "externalDocs", skip_serializing_if = "Option::is_none")]
     pub external_docs: Option<ExternalDocumentation>,
+
+    /// A reference to the definition that describes object used in the odata filter
+    #[serde(rename = "x-ms-odata", skip_serializing_if = "Option::is_none")]
+    pub x_ms_odata: Option<String>,
 }

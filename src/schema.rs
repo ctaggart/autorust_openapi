@@ -47,6 +47,9 @@ pub struct Response {
     pub schema: Option<ReferenceOr<Schema>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub headers: IndexMap<String, ReferenceOr<Header>>,
+
+    #[serde(rename = "x-ms-error-response", skip_serializing_if = "Option::is_none")]
+    pub x_ms_error_response: Option<bool>,
 }
 
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
@@ -143,4 +146,7 @@ pub struct Schema {
 
     #[serde(rename = "x-ms-discriminator-value", skip_serializing_if = "Option::is_none")]
     pub x_ms_discriminator_value: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub example: Option<serde_json::Value>,
 }
