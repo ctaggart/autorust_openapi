@@ -39,7 +39,7 @@ pub type SecurityRequirement = IndexMap<String, Vec<String>>;
 
 /// https://swagger.io/docs/specification/2-0/describing-responses/
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Response {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -52,8 +52,15 @@ pub struct Response {
     pub x_ms_error_response: Option<bool>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(untagged)]
+pub enum AdditionalProperties {
+    Boolean(bool),
+    Schema(ReferenceOr<Schema>),
+}
+
 /// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schemaObject
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Default)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Schema {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -65,7 +72,7 @@ pub struct Schema {
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub properties: IndexMap<String, ReferenceOr<Schema>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub additional_properties: Box<Option<ReferenceOr<Schema>>>,
+    pub additional_properties: Box<Option<AdditionalProperties>>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub all_of: Vec<ReferenceOr<Schema>>,
     #[serde(skip_serializing_if = "Option::is_none")]

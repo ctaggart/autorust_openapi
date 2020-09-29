@@ -14,6 +14,7 @@ const PATHS: &[&str] = &[
     // https://github.com/ctaggart/autorust_openapi/issues/20
     // "../azure-rest-api-specs/specification/apimanagement/resource-manager/Microsoft.ApiManagement/stable/2019-12-01/apimapis.json",
     "../azure-rest-api-specs/specification/communication/data-plane/Microsoft.CommunicationServicesChat/preview/2020-09-21-preview2/communicationserviceschat.json",
+    "../azure-rest-api-specs/specification/eventgrid/data-plane/Microsoft.EventGrid/stable/2018-01-01/EventGrid.json",
 ];
 
 #[test]
