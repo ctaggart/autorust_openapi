@@ -20,7 +20,7 @@ pub struct Operation {
     #[serde(rename = "operationId", skip_serializing_if = "Option::is_none")]
     pub operation_id: Option<String>,
     /// Required. The list of possible responses as they are returned from executing this operation.
-    pub responses: IndexMap<String, Response>,
+    pub responses: IndexMap<StatusCode, Response>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameters: Vec<ReferenceOr<Parameter>>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]

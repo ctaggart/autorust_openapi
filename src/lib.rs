@@ -11,9 +11,10 @@ mod paths;
 mod reference;
 mod schema;
 mod security;
+mod status_code;
 mod tag;
 
 pub use self::{
     autorest::*, contact::*, external_documentation::*, header::*, info::*, license::*, openapi::*, operation::*, parameter::*, paths::*,
-    reference::*, schema::*, security::*, tag::*,
+    reference::*, schema::*, security::*, status_code::*, tag::*,
 };

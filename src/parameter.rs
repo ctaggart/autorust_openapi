@@ -51,7 +51,7 @@ pub struct Parameter {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub unique_items: Option<bool>,
     #[serde(rename = "enum", default, skip_serializing_if = "Vec::is_empty")]
-    pub enum_: Vec<String>,
+    pub enum_: Vec<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multiple_of: Option<f64>,
 
