@@ -37,7 +37,7 @@ pub struct OpenAPI {
     pub parameters: IndexMap<String, Parameter>,
     /// mappings to http response codes or "default"
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
-    pub responses: IndexMap<String, ReferenceOr<Response>>,
+    pub responses: IndexMap<StatusCode, ReferenceOr<Response>>,
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub security_definitions: IndexMap<String, Security>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
