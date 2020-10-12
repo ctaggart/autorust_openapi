@@ -13,7 +13,7 @@ pub struct Parameter {
 
     /// may be `header`, `query`, 'path`, `formData`
     #[serde(rename = "in")]
-    pub in_: String,
+    pub in_: ParameterType,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required: Option<bool>,
@@ -23,7 +23,7 @@ pub struct Parameter {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_empty_value: Option<bool>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub collection_format: Option<String>,
 
@@ -44,4 +44,14 @@ pub struct Parameter {
 
     #[serde(rename = "x-ms-client-request-id", skip_serializing_if = "Option::is_none")]
     pub x_ms_client_request_id: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum ParameterType {
+    Path,
+    Query,
+    Header,
+    Body,
+    Form,
 }
