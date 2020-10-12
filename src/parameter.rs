@@ -23,7 +23,7 @@ pub struct Parameter {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub allow_empty_value: Option<bool>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub collection_format: Option<String>,
 
