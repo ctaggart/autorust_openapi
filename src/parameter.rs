@@ -25,7 +25,7 @@ pub struct Parameter {
     pub allow_empty_value: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub collection_format: Option<String>,
+    pub collection_format: Option<CollectionFormat>,
 
     /// provides a mechanism to specify that the global parameter is actually a parameter on the operation and not a client property
     /// https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md#x-ms-parameter-location
@@ -54,4 +54,14 @@ pub enum ParameterType {
     Header,
     Body,
     Form,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum CollectionFormat {
+    Csv,
+    Ssv,
+    Tsv,
+    Pipes,
+    Multi,
 }
