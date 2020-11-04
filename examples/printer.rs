@@ -1,5 +1,5 @@
 use autorust_openapi::OpenAPI;
-use std::{fs::File, io::Read, process::exit};
+use std::{fs, process::exit};
 
 pub type Error = Box<dyn std::error::Error>;
 pub type Result<T> = std::result::Result<T, Error>;
@@ -14,8 +14,7 @@ fn main() -> Result<()> {
         Some(path) => {
             // reading the whole file upfront is much faster than using a BufReader
             // https://github.com/serde-rs/json/issues/160
-            let mut bytes = Vec::new();
-            File::open(path)?.read_to_end(&mut bytes)?;
+            let bytes = fs::read(path)?;
             let spec: OpenAPI = serde_json::from_slice(&bytes)?;
             println!("# of paths: {}", spec.paths.len());
             for (path, _op) in spec.paths {

@@ -1,7 +1,7 @@
 use autorust_openapi::OpenAPI;
 use std::{
-    fs::{create_dir_all, File},
-    io::{Read, Write},
+    fs::{self, create_dir_all, File},
+    io::Write,
     path::{Path, PathBuf},
     process::exit,
 };
@@ -22,8 +22,7 @@ fn main() -> Result<()> {
             let file_in = Path::new(&file_in);
             // reading the whole file upfront is much faster than using a BufReader
             // https://github.com/serde-rs/json/issues/160
-            let mut bytes = Vec::new();
-            File::open(file_in)?.read_to_end(&mut bytes)?;
+            let bytes = fs::read(file_in)?;
             let spec: OpenAPI = serde_json::from_slice(&bytes)?;
             let json = serde_json::to_string_pretty(&spec)?;
 
