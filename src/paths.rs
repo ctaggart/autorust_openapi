@@ -21,3 +21,20 @@ pub struct PathItem {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameters: Vec<ReferenceOr<Parameter>>,
 }
+
+impl PathItem {
+    /// Returns all operations
+    pub fn operations(&self) -> impl Iterator<Item = &Operation> {
+        vec![
+            self.get.as_ref(),
+            self.post.as_ref(),
+            self.put.as_ref(),
+            self.patch.as_ref(),
+            self.delete.as_ref(),
+            self.options.as_ref(),
+            self.head.as_ref(),
+        ]
+        .into_iter()
+        .filter_map(|x| x)
+    }
+}
