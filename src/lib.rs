@@ -1,5 +1,6 @@
 mod autorest;
 mod contact;
+pub mod example;
 mod external_documentation;
 mod header;
 mod info;
